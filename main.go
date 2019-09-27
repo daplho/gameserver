@@ -51,6 +51,10 @@ func doSignal() {
 	os.Exit(0)
 }
 
+func gameServerName() string {
+	return "NAME: " + "daplho-test" + "\n"
+}
+
 func newStopChannel() <-chan struct{} {
 	stop := make(chan struct{})
 	c := make(chan os.Signal, 2)
@@ -86,8 +90,18 @@ func readWriteLoop(conn net.PacketConn, stop chan struct{}) {
 			os.Exit(0)
 		case "UNHEALTHY":
 			close(stop)
+		case "GAMESERVER":
+			respond(conn, sender, gameServerName())
+		case "READY":
+			ready()
+		case "CRASH":
+			log.Print("Crashing.")
+			os.Exit(1)
 		}
 	}
+}
+
+func ready() {
 }
 
 func respond(conn net.PacketConn, sender net.Addr, txt string) {
